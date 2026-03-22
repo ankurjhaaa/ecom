@@ -1,0 +1,32 @@
+{% extends 'admin/admin_base.html' %}
+{% block content %}
+  <div class="flex-1 p-6">
+    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Books -->
+      <div class="bg-white rounded-lg shadow p-4 border-2 border-violet-600">
+        <h2 class="text-sm font-medium text-gray-500">Total Books</h2>
+        <p class="text-2xl font-bold text-violet-600">{{ total_books }}</p>
+      </div>
+
+      <!-- Total Authors -->
+      <div class="bg-white rounded-lg shadow p-4 border-2 border-violet-600">
+        <h2 class="text-sm font-medium text-gray-500">Total Authors</h2>
+        <p class="text-2xl font-bold text-violet-600">{{ total_authors }}</p>
+      </div>
+
+      <!-- Total Genres -->
+      <div class="bg-white rounded-lg shadow p-4 border-2 border-violet-600">
+        <h2 class="text-sm font-medium text-gray-500">Total Genres</h2>
+        <p class="text-2xl font-bold text-violet-600">{{ total_genres }}</p>
+      </div>
+
+      <!-- Total Orders -->
+      <div class="bg-white rounded-lg shadow p-4 border-2 border-violet-600">
+        <h2 class="text-sm font-medium text-gray-500">Total Orders</h2>
+        <p class="text-2xl font-bold text-violet-600">0</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

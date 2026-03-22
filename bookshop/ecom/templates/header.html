@@ -1,0 +1,32 @@
+<header class="border-b border-gray-200 bg-white">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="{% url "home" %}"><div class="text-xl font-semibold text-violet-600">Bookshop</div></a>
+
+    <form action="" class="w-1/2">
+      <div class="flex">
+        <input type="text" name="search" placeholder="Search books..." class="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:border-violet-500" />
+
+        <button class="px-5 bg-violet-600 text-white border border-violet-600 rounded-r-md">Search</button>
+        <input type="search" hidden name="" id="" />
+      </div>
+    </form>
+
+    <nav class="flex items-center gap-6 text-sm">
+      <a href="/" class="text-gray-600 hover:text-violet-600">Home</a>
+
+      <a href="#" class="text-gray-600 hover:text-violet-600">Books</a>
+
+      <a href="#" class="text-gray-600 hover:text-violet-600">Contact</a>
+    </nav>
+  </div>
+
+  <div class="border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex gap-6 py-3 overflow-x-auto whitespace-nowrap text-sm">
+        {% for genere in generes %}
+          <a href="?category={{ genere.slug }}" class="text-gray-600 hover:text-violet-600">{{ genere.title }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</header>

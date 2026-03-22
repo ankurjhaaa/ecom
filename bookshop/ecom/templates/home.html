@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {% for book in books %}
+        <div class="border border-gray-200 rounded-lg bg-white overflow-hidden">
+          <img src="{{ book.cover_image.url }}" class="w-full h-60 object-cover" />
+
+          <div class="p-4">
+            <h2 class="text-lg font-semibold text-violet-600 mb-1">{{ book.title }}</h2>
+
+            <p class="text-sm text-gray-600 mb-3">Author: {{ book.author.name }}</p>
+
+            <div class="flex items-center justify-between">
+              <span class="text-violet-600 font-semibold">₹{{ book.price }}</span>
+
+              <a href="{% url 'book_view' book.slug %}" class="text-sm border border-violet-600 text-violet-600 px-3 py-1 rounded hover:bg-violet-600 hover:text-white">View</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

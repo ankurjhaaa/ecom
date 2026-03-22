@@ -1,0 +1,94 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- LEFT: AUTHORS LIST -->
+    <div class="lg:col-span-2 bg-white border border-gray-200 rounded-lg">
+
+        <div class="p-4 border-b border-gray-200">
+            <h2 class="text-md font-semibold text-gray-700">All Authors</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+
+                <thead class="bg-gray-50 text-gray-600">
+                    <tr>
+                        <th class="px-4 py-3 text-left">#</th>
+                        <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">Email</th>
+                        <th class="px-4 py-3 text-left">Contact</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y">
+
+                    {% for author in authors %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3">{{ forloop.counter }}</td>
+                        <td class="px-4 py-3 font-medium">{{ author.name }}</td>
+                        <td class="px-4 py-3">{{ author.email }}</td>
+                        <td class="px-4 py-3">{{ author.contact }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-6 text-gray-400">
+                            No authors found
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT: ADD AUTHOR FORM -->
+    <div class="bg-white border border-gray-200 rounded-lg">
+
+        <div class="p-4 border-b border-gray-200">
+            <h2 class="text-md font-semibold text-gray-700">Add Author</h2>
+        </div>
+
+        <form method="POST" class="p-4 space-y-4">
+            {% csrf_token %}
+
+            <!-- Name -->
+            <div>
+                <label class="block text-sm text-gray-600 mb-1">Name</label>
+                <input type="text" name="name" required
+                    class="w-full border px-3 py-2 rounded focus:border-violet-500 outline-none">
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-sm text-gray-600 mb-1">Email</label>
+                <input type="email" name="email"
+                    class="w-full border px-3 py-2 rounded focus:border-violet-500 outline-none">
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <label class="block text-sm text-gray-600 mb-1">Contact</label>
+                <input type="text" name="contact"
+                    class="w-full border px-3 py-2 rounded focus:border-violet-500 outline-none">
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                class="w-full bg-violet-600 text-white py-2 rounded hover:bg-violet-700">
+                Add Author
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
