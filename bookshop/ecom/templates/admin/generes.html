@@ -1,0 +1,66 @@
+{% extends 'admin/admin_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+	<div class="lg:col-span-2 bg-white border border-gray-200 rounded-lg">
+
+		<div class="p-4 border-b border-gray-200">
+			<h2 class="text-md font-semibold text-gray-700">All Generes</h2>
+		</div>
+
+		<div class="overflow-x-auto">
+			<table class="w-full text-sm">
+
+				<thead class="bg-gray-50 text-gray-600">
+					<tr>
+						<th class="px-4 py-3 text-left">#</th>
+						<th class="px-4 py-3 text-left">Title</th>
+						<th class="px-4 py-3 text-left">Slug</th>
+					</tr>
+				</thead>
+
+				<tbody class="divide-y">
+					{% for genere in genres %}
+					<tr class="hover:bg-gray-50">
+						<td class="px-4 py-3">{{ forloop.counter }}</td>
+						<td class="px-4 py-3 font-medium">{{ genere.title }}</td>
+						<td class="px-4 py-3">{{ genere.slug }}</td>
+					</tr>
+					{% empty %}
+					<tr>
+						<td colspan="3" class="text-center py-6 text-gray-400">
+							No genere found
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+
+			</table>
+		</div>
+
+	</div>
+
+	<div class="bg-white border border-gray-200 rounded-lg">
+
+		<div class="p-4 border-b border-gray-200">
+			<h2 class="text-md font-semibold text-gray-700">Add Genere</h2>
+		</div>
+
+		<form method="POST" class="p-4 space-y-4">
+			{% csrf_token %}
+			{{ genere_form|crispy }}
+
+			<button type="submit" class="w-full bg-violet-600 text-white py-2 rounded hover:bg-violet-700">
+				Add Genere
+			</button>
+
+		</form>
+
+	</div>
+
+</div>
+
+{% endblock %}

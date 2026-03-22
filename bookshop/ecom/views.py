@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 from django.utils.text import slugify
+from .forms import AuthorInsertForm, GenereInsertForm, BookInsertForm
 
 # Create your views here.
 
@@ -58,45 +59,82 @@ def admin_dashboard(request):
 
 
 def admin_books(request): 
+    if request.method == "POST":
+        book_form = BookInsertForm(request.POST, request.FILES)
+        if book_form.is_valid():
+            book = book_form.save(commit=False)
+            base_slug = slugify(book.title)
+            slug = base_slug
+
+            counter = 1
+            while Book.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            book.slug = slug
+            book.save()
+            return redirect("admin_books")
+    else:
+        book_form = BookInsertForm()
+
     data = {
         "title": "Admin Books",
-        "books": Book.objects.all(),
+        "books": Book.objects.select_related("author", "genere").all().order_by("-id"),
+        "book_form": book_form,
     }
-    return render(request, 'admin/books.html', data)
+    return render(request, 'admin/products.html', data)
 
 
 def admin_authors(request):
     if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        contact = request.POST.get("contact")
-
-        if name:
-            base_slug = slugify(name)
+        author_form = AuthorInsertForm(request.POST or None)
+        if author_form.is_valid():
+            author = author_form.save(commit=False)
+            base_slug = slugify(author.name)
             slug = base_slug
 
-            # UNIQUE slug banane ke liye loop
             counter = 1
             while Author.objects.filter(slug=slug).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1
 
-            Author.objects.create(
-                name=name,
-                email=email,
-                contact=contact,
-                slug=slug
-            )
+            author.slug = slug
+            author.save()
+            return redirect("admin_authors")
+    else:
+        author_form = AuthorInsertForm()
 
     data = {
         "title": "Admin Authors",
         "authors": Author.objects.all().order_by('-id'),
+        "author_form": author_form,
     }
 
     return render(request, 'admin/authors.html', data)
-def admin_genres(request):
+
+
+def admin_generes(request):
+    if request.method == "POST":
+        genere_form = GenereInsertForm(request.POST)
+        if genere_form.is_valid():
+            genere = genere_form.save(commit=False)
+            base_slug = slugify(genere.title)
+            slug = base_slug
+
+            counter = 1
+            while Genere.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            genere.slug = slug
+            genere.save()
+            return redirect("admin_generes")
+    else:
+        genere_form = GenereInsertForm()
+
     data = {
-        "title": "Admin Genres",
-        "genres": Genere.objects.all(),
+        "title": "Admin Generes",
+        "genres": Genere.objects.all().order_by("-id"),
+        "genere_form": genere_form,
     }
-    return render(request, 'admin/genres.html', data)
+    return render(request, 'admin/generes.html', data)

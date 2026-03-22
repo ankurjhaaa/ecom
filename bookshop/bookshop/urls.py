@@ -14,5 +14,5 @@ urlpatterns = [
     path('admin/',admin_dashboard, name='admin_dashboard'),
     path('admin/books/', admin_books, name='admin_books'),
     path('admin/authors/', admin_authors, name='admin_authors'),
-    path('admin/generes/', admin_genres, name='admin_genres'),
+    path('admin/generes/', admin_generes, name='admin_generes'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
