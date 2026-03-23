@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 from .models import *
 from django.utils.text import slugify
 from .forms import AuthorInsertForm, GenereInsertForm, BookInsertForm
@@ -77,10 +78,17 @@ def admin_books(request):
     else:
         book_form = BookInsertForm()
 
+    books_list = Book.objects.select_related("author", "genere").all().order_by("-id")
+    paginator = Paginator(books_list, 10)
+    page_number = request.GET.get('page', 1)
+    books = paginator.get_page(page_number)
+
     data = {
         "title": "Admin Books",
-        "books": Book.objects.select_related("author", "genere").all().order_by("-id"),
+        "books": books,
         "book_form": book_form,
+        "paginator": paginator,
+        "page_obj": books,
     }
     return render(request, 'admin/products.html', data)
 
@@ -104,10 +112,17 @@ def admin_authors(request):
     else:
         author_form = AuthorInsertForm()
 
+    authors_list = Author.objects.all().order_by('-id')
+    paginator = Paginator(authors_list, 10)
+    page_number = request.GET.get('page', 1)
+    authors = paginator.get_page(page_number)
+
     data = {
         "title": "Admin Authors",
-        "authors": Author.objects.all().order_by('-id'),
+        "authors": authors,
         "author_form": author_form,
+        "paginator": paginator,
+        "page_obj": authors,
     }
 
     return render(request, 'admin/authors.html', data)
@@ -132,9 +147,16 @@ def admin_generes(request):
     else:
         genere_form = GenereInsertForm()
 
+    genres_list = Genere.objects.all().order_by("-id")
+    paginator = Paginator(genres_list, 10)
+    page_number = request.GET.get('page', 1)
+    genres = paginator.get_page(page_number)
+
     data = {
         "title": "Admin Generes",
-        "genres": Genere.objects.all().order_by("-id"),
+        "genres": genres,
         "genere_form": genere_form,
+        "paginator": paginator,
+        "page_obj": genres,
     }
     return render(request, 'admin/generes.html', data)
