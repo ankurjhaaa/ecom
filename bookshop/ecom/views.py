@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
+from django.contrib.auth import login, logout
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import *
 from django.utils.text import slugify
-from .forms import AuthorInsertForm, GenereInsertForm, BookInsertForm
+from .forms import AuthorInsertForm, GenereInsertForm, BookInsertForm, SignupForm, LoginForm
 
 # Create your views here.
 
@@ -37,6 +39,58 @@ def home(request):
 def filter(request):
     return render(request, 'filter.html')
 
+
+def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignupForm()
+
+    data = {
+        'title': 'Sign Up',
+        'form': form,
+        'generes': Genere.objects.all(),
+    }
+    return render(request, 'auth/signup.html', data)
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    next_url = request.GET.get('next')
+
+    if request.method == 'POST':
+        form = LoginForm(request, data=request.POST)
+        next_url = request.POST.get('next') or next_url
+        if form.is_valid():
+            login(request, form.get_user())
+            if next_url:
+                return redirect(next_url)
+            return redirect('home')
+    else:
+        form = LoginForm(request)
+
+    data = {
+        'title': 'Login',
+        'form': form,
+        'next': next_url,
+        'generes': Genere.objects.all(),
+    }
+    return render(request, 'auth/login.html', data)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
 def book_view(request, slug):
     book = Book.objects.get(slug=slug)
     related_books = Book.objects.filter(genere=book.genere).exclude(id=book.id)[:4]
@@ -49,6 +103,7 @@ def book_view(request, slug):
     return render(request, 'book_view.html', data)
 
 
+@staff_member_required(login_url='login')
 def admin_dashboard(request):
     data = {
         "title": "Admin Dashboard",
@@ -59,6 +114,7 @@ def admin_dashboard(request):
     return render(request, 'admin/dashboard.html', data)
 
 
+@staff_member_required(login_url='login')
 def admin_books(request): 
     if request.method == "POST":
         book_form = BookInsertForm(request.POST, request.FILES)
@@ -93,6 +149,7 @@ def admin_books(request):
     return render(request, 'admin/products.html', data)
 
 
+@staff_member_required(login_url='login')
 def admin_authors(request):
     if request.method == "POST":
         author_form = AuthorInsertForm(request.POST or None)
@@ -128,6 +185,7 @@ def admin_authors(request):
     return render(request, 'admin/authors.html', data)
 
 
+@staff_member_required(login_url='login')
 def admin_generes(request):
     if request.method == "POST":
         genere_form = GenereInsertForm(request.POST)

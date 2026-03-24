@@ -9,6 +9,9 @@ urlpatterns = [
     path("", home, name='home'),
     path('filter/', filter, name='filter'),
     path('book_view/<str:slug>/', book_view, name='book_view'),
+    path('signup/', signup_view, name='signup'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
 
 
     path('admin/',admin_dashboard, name='admin_dashboard'),

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-8">
+    <div class="bg-white border border-gray-200 rounded-lg">
+        <div class="p-4 border-b border-gray-200">
+            <h2 class="text-md font-semibold text-gray-700">Sign Up</h2>
+        </div>
+
+        <form method="POST" class="p-4 space-y-4">
+            {% csrf_token %}
+
+            {{ form|crispy }}
+
+            <button type="submit" class="w-full bg-violet-600 text-white py-2 rounded hover:bg-violet-700">
+                Create Account
+            </button>
+
+            <p class="text-sm text-gray-600 text-center">
+                Already have an account?
+                <a href="{% url 'login' %}" class="text-violet-600 hover:underline">Login</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
