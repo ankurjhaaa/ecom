@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import *
 from django.utils.text import slugify
-from .forms import AuthorInsertForm, GenereInsertForm, BookInsertForm, SignupForm, LoginForm
+from .forms import AuthorInsertForm, GenereInsertForm, BookInsertForm, CouponInsertForm, SignupForm, LoginForm
 
 # Create your views here.
 
@@ -218,3 +218,43 @@ def admin_generes(request):
         "page_obj": genres,
     }
     return render(request, 'admin/generes.html', data)
+
+
+@staff_member_required(login_url='login')
+def admin_coupons(request, coupon_id=None):
+    coupon = None
+    if coupon_id:
+        coupon = Coupopn.objects.filter(id=coupon_id).first()
+        if not coupon:
+            return redirect('admin_coupons')
+
+    if request.method == "POST":
+        coupon_form = CouponInsertForm(request.POST, instance=coupon)
+        if coupon_form.is_valid():
+            coupon_form.save()
+            return redirect("admin_coupons")
+    else:
+        coupon_form = CouponInsertForm(instance=coupon)
+
+    coupons_list = Coupopn.objects.all().order_by('-id')
+    paginator = Paginator(coupons_list, 10)
+    page_number = request.GET.get('page', 1)
+    coupons = paginator.get_page(page_number)
+
+    data = {
+        "title": "Admin Coupons",
+        "coupons": coupons,
+        "coupon_form": coupon_form,
+        "is_editing": coupon is not None,
+        "editing_coupon": coupon,
+        "paginator": paginator,
+        "page_obj": coupons,
+    }
+    return render(request, 'admin/coupons.html', data)
+
+
+@staff_member_required(login_url='login')
+def admin_coupon_delete(request, coupon_id):
+    if request.method == "POST":
+        Coupopn.objects.filter(id=coupon_id).delete()
+    return redirect('admin_coupons')

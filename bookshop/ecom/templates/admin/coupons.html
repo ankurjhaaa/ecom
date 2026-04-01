@@ -1,0 +1,123 @@
+{% extends 'admin/admin_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+	<div class="lg:col-span-2 bg-white border border-gray-200 rounded-lg">
+
+		<div class="p-4 border-b border-gray-200">
+			<h2 class="text-md font-semibold text-gray-700">All Coupons</h2>
+		</div>
+
+		<div class="overflow-x-auto">
+			<table class="w-full text-sm">
+				<thead class="bg-gray-50 text-gray-600">
+					<tr>
+						<th class="px-4 py-3 text-left">#</th>
+						<th class="px-4 py-3 text-left">Code</th>
+						<th class="px-4 py-3 text-left">Discount</th>
+						<th class="px-4 py-3 text-left">Valid From</th>
+						<th class="px-4 py-3 text-left">Valid To</th>
+						<th class="px-4 py-3 text-left">Status</th>
+						<th class="px-4 py-3 text-left">Actions</th>
+					</tr>
+				</thead>
+
+				<tbody class="divide-y">
+					{% for coupon in coupons %}
+					<tr class="hover:bg-gray-50">
+						<td class="px-4 py-3">{{ forloop.counter }}</td>
+						<td class="px-4 py-3 font-medium">{{ coupon.code }}</td>
+						<td class="px-4 py-3">{{ coupon.discount_amount }}</td>
+						<td class="px-4 py-3">{{ coupon.valid_from|date:'d M Y, h:i A' }}</td>
+						<td class="px-4 py-3">{{ coupon.valid_to|date:'d M Y, h:i A' }}</td>
+						<td class="px-4 py-3">
+							{% if coupon.active %}
+							<span class="text-green-600 font-medium">Active</span>
+							{% else %}
+							<span class="text-red-500 font-medium">Inactive</span>
+							{% endif %}
+						</td>
+						<td class="px-4 py-3">
+							<div class="flex items-center gap-2">
+								<a href="{% url 'admin_coupon_edit' coupon.id %}" class="px-2 py-1 border border-violet-500 text-violet-600 rounded hover:bg-violet-50">Edit</a>
+								<form method="POST" action="{% url 'admin_coupon_delete' coupon.id %}">
+									{% csrf_token %}
+									<button type="submit" class="px-2 py-1 border border-red-500 text-red-500 rounded hover:bg-red-50">Delete</button>
+								</form>
+							</div>
+						</td>
+					</tr>
+					{% empty %}
+					<tr>
+						<td colspan="7" class="text-center py-6 text-gray-400">
+							No coupons found
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+
+			</table>
+		</div>
+
+		{% if page_obj.has_other_pages %}
+		<div class="p-4 border-t border-gray-200 flex justify-between items-center text-sm">
+			<div class="text-gray-600">
+				Page <span class="font-semibold">{{ page_obj.number }}</span> of <span class="font-semibold">{{ page_obj.paginator.num_pages }}</span>
+			</div>
+
+			<div class="flex gap-2">
+				{% if page_obj.has_previous %}
+				<a href="?page=1" class="px-3 py-1 border border-violet-500 text-violet-600 rounded hover:bg-violet-50">First</a>
+				<a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 border border-violet-500 text-violet-600 rounded hover:bg-violet-50">Previous</a>
+				{% endif %}
+
+				{% for num in page_obj.paginator.page_range %}
+					{% if page_obj.number == num %}
+					<span class="px-3 py-1 bg-violet-600 text-white rounded">{{ num }}</span>
+					{% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+					<a href="?page={{ num }}" class="px-3 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-50">{{ num }}</a>
+					{% endif %}
+				{% endfor %}
+
+				{% if page_obj.has_next %}
+				<a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 border border-violet-500 text-violet-600 rounded hover:bg-violet-50">Next</a>
+				<a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1 border border-violet-500 text-violet-600 rounded hover:bg-violet-50">Last</a>
+				{% endif %}
+			</div>
+		</div>
+		{% endif %}
+
+	</div>
+
+	<div class="bg-white border border-gray-200 rounded-lg">
+
+		<div class="p-4 border-b border-gray-200">
+			<h2 class="text-md font-semibold text-gray-700">
+				{% if is_editing %}Update Coupon{% else %}Add Coupon{% endif %}
+			</h2>
+		</div>
+
+		<form method="POST" class="p-4 space-y-4">
+			{% csrf_token %}
+			{{ coupon_form|crispy }}
+
+			<button type="submit" class="w-full bg-violet-600 text-white py-2 rounded hover:bg-violet-700">
+				{% if is_editing %}Update Coupon{% else %}Add Coupon{% endif %}
+			</button>
+
+			{% if is_editing %}
+			<a href="{% url 'admin_coupons' %}" class="block text-center w-full border border-gray-300 text-gray-700 py-2 rounded hover:bg-gray-50">
+				Cancel Edit
+			</a>
+			{% endif %}
+
+		</form>
+
+	</div>
+
+</div>
+
+{% endblock %}

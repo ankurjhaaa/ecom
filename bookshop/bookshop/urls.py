@@ -1,6 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path
+from ecom.checkoutView import addToCart, cart, remove_from_cart
 from ecom.views import *
 from django.conf import settings
 from django.conf.urls.static import static
@@ -18,4 +19,13 @@ urlpatterns = [
     path('admin/books/', admin_books, name='admin_books'),
     path('admin/authors/', admin_authors, name='admin_authors'),
     path('admin/generes/', admin_generes, name='admin_generes'),
+    path('admin/coupons/', admin_coupons, name='admin_coupons'),
+    path('admin/coupons/<int:coupon_id>/edit/', admin_coupons, name='admin_coupon_edit'),
+    path('admin/coupons/<int:coupon_id>/delete/', admin_coupon_delete, name='admin_coupon_delete'),
+    
+    
+    
+    path('add_to_cart/<str:slug>/', addToCart, name='add_to_cart'),
+    path('cart/', cart, name='cart'),
+    path('cart/remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

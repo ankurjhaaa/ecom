@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import Author, Genere, Book
+from .models import Author, Genere, Book, Coupopn
 
 
 class AuthorInsertForm(forms.ModelForm):
@@ -52,6 +52,22 @@ class BookInsertForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.add_input(Submit("submit", "Add Book"))
+
+
+class CouponInsertForm(forms.ModelForm):
+    class Meta:
+        model = Coupopn
+        fields = ["code", "discount_amount", "valid_from", "valid_to", "active"]
+        widgets = {
+            "valid_from": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "valid_to": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.add_input(Submit("submit", "Save Coupon"))
 
 
 class SignupForm(UserCreationForm):
