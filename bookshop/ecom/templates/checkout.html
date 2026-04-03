@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Bookshop{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-7xl mx-auto">
+  <h1 class="text-2xl font-semibold text-violet-600 mb-6">Checkout Order</h1>
+
+  <form method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    {% csrf_token %}
+    <div class="lg:col-span-2 space-y-6">
+      <div class="border border-gray-200 rounded-lg p-5 bg-white">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Shipping Address</h2>
+
+        {% if addresses %}
+          <div class="space-y-3">
+            {% for address in addresses %}
+            <label class="flex items-start gap-3 border border-gray-200 rounded-md p-3 cursor-pointer hover:border-violet-400">
+              <input type="radio" name="selected_address" value="{{ address.id }}" {% if forloop.first %}checked required{% endif %} class="mt-1 accent-violet-600">
+              <div class="text-sm text-gray-700">
+                <p class="font-medium text-gray-800">{{ address.name }}</p>
+                <p>{{ address.contact }}</p>
+                <p>{{ address.address_line_1 }}{% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}</p>
+                <p>{{ address.city }}, {{ address.state }}, {{ address.country }} - {{ address.postal_code }}</p>
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="border border-dashed border-gray-300 rounded-md p-4 bg-gray-50 text-sm text-gray-600">
+            No address added yet.
+          </div>
+        {% endif %}
+
+        <a href="{% url 'add_address' %}" class="inline-block mt-3 text-sm text-violet-600 hover:underline">Add New Address</a>
+      </div>
+
+      <div class="border border-gray-200 rounded-lg p-5 bg-white">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Payment Method</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-gray-700">
+          <label class="flex items-center gap-3 border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-violet-400 hover:bg-violet-50">
+            <input type="radio" name="payment_method" value="cod" checked required class="accent-violet-600">
+            <div>
+              <p class="font-medium text-gray-800">Cash on Delivery</p>
+              <p class="text-xs text-gray-500">Pay when order arrives</p>
+            </div>
+          </label>
+
+          <label class="flex items-center gap-3 border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-violet-400 hover:bg-violet-50">
+            <input type="radio" name="payment_method" value="card" class="accent-violet-600">
+            <div>
+              <p class="font-medium text-gray-800">Credit / Debit Card</p>
+              <p class="text-xs text-gray-500">Visa, MasterCard, RuPay</p>
+            </div>
+          </label>
+
+          <label class="flex items-center gap-3 border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-violet-400 hover:bg-violet-50">
+            <input type="radio" name="payment_method" value="upi" class="accent-violet-600">
+            <div>
+              <p class="font-medium text-gray-800">UPI</p>
+              <p class="text-xs text-gray-500">Google Pay, PhonePe, Paytm</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full lg:sticky lg:top-6 border border-gray-200 rounded-lg p-4 bg-white h-fit">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
+
+      <div class="space-y-2 text-sm border-t border-gray-200 mt-4 pt-4">
+        <div class="flex items-center justify-between">
+          <span class="text-gray-600">Subtotal</span>
+          <span class="font-medium">₹{{ subtotal }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-600">Delivery Charge</span>
+          <span class="font-medium">₹{{ delivery_charge }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-600">Coupon Discount</span>
+          <span class="font-medium text-green-600">- ₹{{ coupon_discount }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-600">Tax (18%)</span>
+          <span class="font-medium">₹{{ tax_amount }}</span>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between text-lg font-semibold">
+        <span>Grand Total</span>
+        <span class="text-violet-600">₹{{ grand_total|floatformat:2 }}</span>
+      </div>
+
+      <button type="submit" class="mt-4 w-full px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700">Proceed to Pay</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

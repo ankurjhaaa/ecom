@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import Author, Genere, Book, Coupopn
+from .models import Author, Genere, Book, Coupopn, Address
 
 
 class AuthorInsertForm(forms.ModelForm):
@@ -84,6 +84,26 @@ class SignupForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+
+
+class AddressInsertForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = [
+            "name",
+            "contact",
+            "address_line_1",
+            "address_line_2",
+            "city",
+            "state",
+            "country",
+            "postal_code",
+        ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Address - Bookshop{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-8">
+    <div class="bg-white border border-gray-200 rounded-lg">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-md font-semibold text-gray-700">Add New Address</h2>
+            <a href="{% url 'checkout' %}" class="text-sm text-violet-600 hover:underline">Back to Checkout</a>
+        </div>
+
+        <form method="POST" class="p-4 space-y-4">
+            {% csrf_token %}
+
+            {{ form|crispy }}
+
+            <button type="submit" class="w-full bg-violet-600 text-white py-2 rounded hover:bg-violet-700">
+                Save Address
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

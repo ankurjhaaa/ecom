@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 from django.urls import path
-from ecom.checkoutView import addToCart, cart, remove_from_cart
+from ecom.checkoutView import addToCart, add_address, cart, checkout, remove_from_cart
 from ecom.views import *
 from django.conf import settings
 from django.conf.urls.static import static
@@ -27,5 +27,7 @@ urlpatterns = [
     
     path('add_to_cart/<str:slug>/', addToCart, name='add_to_cart'),
     path('cart/', cart, name='cart'),
+    path('checkout/', checkout, name='checkout'),
+    path('address/add/', add_address, name='add_address'),
     path('cart/remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

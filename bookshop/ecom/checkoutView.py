@@ -2,11 +2,82 @@ from django.shortcuts import render, redirect
 from .models import *
 from .forms import *
 from django.contrib.auth.decorators import login_required
+import uuid
+
+
+@login_required
+def add_address(req):
+    if req.method == 'POST':
+        form = AddressInsertForm(req.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = req.user
+            address.save()
+            return redirect('checkout')
+    else:
+        form = AddressInsertForm()
+
+    data = {
+        'title': 'Add Address',
+        'form': form,
+        'generes': Genere.objects.all(),
+    }
+    return render(req, 'add_address.html', data)
 
 
 @login_required
 def checkout(req):
-    return redirect('cart')
+    order = Order.objects.filter(user=req.user, status='pending').first()
+    if order is None:
+        return redirect('cart')
+
+    items = OrderItem.objects.filter(order=order).select_related('book')
+    if not items.exists():
+        return redirect('cart')
+
+    addresses = Address.objects.filter(user=req.user).order_by('-id')
+
+    if req.method == 'POST':
+        selected_address_id = req.POST.get('selected_address', '').strip()
+        selected_payment = req.POST.get('payment_method', '').strip()
+
+        selected_address = addresses.filter(id=selected_address_id).first()
+
+        if selected_address and selected_payment:
+            payment = Payment.objects.create(
+                user=req.user,
+                amount=order.get_final_total(),
+                payment_method=selected_payment,
+                transaction_id=f"TXN-{uuid.uuid4().hex[:12].upper()}",
+            )
+
+            order.address = selected_address
+            order.payment = payment
+            order.total_price = order.get_final_total()
+            order.status = 'confirmed'
+            order.save()
+
+            return redirect('home')
+
+    subtotal = order.get_subtotal()
+    delivery_charge = order.get_delivery_charge()
+    coupon_discount = order.get_coupon_discount()
+    tax_amount = order.get_tax_amount()
+    grand_total = order.get_final_total()
+
+    data = {
+        'title': 'Checkout',
+        'order': order,
+        'items': items,
+        'addresses': addresses,
+        'subtotal': subtotal,
+        'delivery_charge': delivery_charge,
+        'coupon_discount': coupon_discount,
+        'tax_amount': tax_amount,
+        'grand_total': grand_total,
+        'generes': Genere.objects.all(),
+    }
+    return render(req, 'checkout.html', data)
 
 
 def _update_order_total(order):
